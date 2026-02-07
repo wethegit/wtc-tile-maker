@@ -8,6 +8,25 @@ WTC Tile Maker aims to solve this by providing a robust, programmatic solution f
 
 ---
 
+## Quick Start
+
+Generate a seamlessly tileable rotated version of your image:
+
+```sh
+# Rotate an image to 45 degrees
+deno run -A main.ts generate -d 45 input.png
+
+# Or use a preset angle index (run 'list' to see all options)
+deno run -A main.ts generate -a 3 input.png
+
+# List all available rational angles
+deno run -A main.ts list
+```
+
+The output file will be saved in the same directory as the input with the angle appended to the filename (e.g., `input-tile-45.png`).
+
+---
+
 ## Development
 
 ### Prerequisites
