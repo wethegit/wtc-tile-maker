@@ -242,7 +242,7 @@ export async function generateTile({
     y: Math.ceil((diagonal * 2) / metadata.height) + tileMargin,
   };
 
-  // The dimensions of the tiled canvas
+  // The dimensions of the large tiled canvas
   const tiledDimensions = {
     x: metadata.width * tileRepeat.x,
     y: metadata.height * tileRepeat.y,
@@ -255,15 +255,14 @@ export async function generateTile({
       tileRepeat,
     );
 
-  const image = sharp(input);
-  const srcBuffer = await image.png().toBuffer();
-
-  // Build the composite operations to tile the image
+  // BThis is the loop that generates the tiling pattern.
+  // I looked into using a large native tile in Sharp but this ended up being more reliable.
+  const inputBuffer = await sharp(input).png().toBuffer();
   const compositeOps = [];
   for (let y = 0; y < tileRepeat.y; y++) {
     for (let x = 0; x < tileRepeat.x; x++) {
       compositeOps.push({
-        input: srcBuffer,
+        input: inputBuffer,
         left: x * metadata.width,
         top: y * metadata.height,
       });
@@ -271,7 +270,7 @@ export async function generateTile({
   }
 
   // Create the tiled canvas - this is the canvas that covers the whole area and can be very large
-  // Compose the operations, and output a png buffer
+  // Compose the operations, and output a png buffer for further processing
   const tiledCanvas = await sharp({
     limitInputPixels,
     create: {
@@ -293,7 +292,8 @@ export async function generateTile({
 
   const rotatedMetadata = await rotatedCanvas.metadata();
 
-  // Generate the bounds for the cropped image
+  // Generate the bounds for the cropped image, generating a bounds object from appropriate values
+  // left = center point - half the tile width etc.
   const B = {
     left: Math.max(0, Math.floor(rotatedMetadata.width / 2 - tileWidth / 2)),
     top: Math.max(0, Math.floor(rotatedMetadata.height / 2 - tileHeight / 2)),

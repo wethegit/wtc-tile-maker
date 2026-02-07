@@ -166,7 +166,7 @@ async function generate() {
     `Calculated tile dimensions: ${tileDims.width}x${tileDims.height}px`,
   );
 
-  // Validate dimensions against maxValidSize
+  // Validate dimensions against maxValidSize etc.
   const validationErrors = validateDimensions({
     width: tileDims.width,
     height: tileDims.height,
@@ -180,7 +180,6 @@ Suggested fix: choose a different rational angle or increase the maximum valid s
     `);
   }
 
-  // Determine output path
   const outputPath = getOutputPath({
     input: inputPath,
     rationalAngle,
