@@ -41,22 +41,16 @@ export const RATIONAL_ANGLES = [
  * Find the closest rational angle to the given angle
  */
 export function findClosestRationalAngle(angle: number) {
-  // Normalize angle to 0-90 range for matching
+  // Normalize angle to 0-360 range for matching
   let normalizedAngle = angle % 360;
   if (normalizedAngle < 0) normalizedAngle += 360;
 
-  let closest = RATIONAL_ANGLES[0];
-  let minDiff = Math.abs(normalizedAngle - closest.degrees);
-
-  for (const ra of RATIONAL_ANGLES) {
-    const diff = Math.abs(normalizedAngle - ra.degrees);
-    if (diff < minDiff) {
-      minDiff = diff;
-      closest = ra;
-    }
-  }
-
-  return closest;
+  return RATIONAL_ANGLES.reduce((closest, ra) =>
+    Math.abs(normalizedAngle - ra.degrees) <
+    Math.abs(normalizedAngle - closest.degrees)
+      ? ra
+      : closest,
+  );
 }
 
 /**
@@ -103,44 +97,37 @@ export function calculateTileDimensions(
   imageHeight: number,
   rationalAngle: { m: number; n: number },
 ) {
-  const { m, n } = rationalAngle;
-
   // Use absolute values for dimension calculations (direction doesn't affect size)
-  const absM = Math.abs(m);
-  const absN = Math.abs(n);
+  const m = Math.abs(rationalAngle.m);
+  const n = Math.abs(rationalAngle.n);
 
-  // Handle special cases
-  if (absM === 0 && absN === 1) {
-    // 0 degrees - original dimensions work
-    return { width: imageWidth, height: imageHeight };
-  }
-
-  if (absM === 1 && absN === 0) {
-    // ±90 degrees - swap dimensions
-    return { width: imageHeight, height: imageWidth };
-  }
+  // special cases
+  if (m === 0 && n === 1) return { width: imageWidth, height: imageHeight }; // 0 degrees - original dimensions work
+  if (m === 1 && n === 0) return { width: imageHeight, height: imageWidth }; // 90 degrees - swap dimensions
 
   // Reduce m and n by their GCD to get the minimal angle representation
-  const g = gcd(absM, absN) || 1;
-  const mReduced = absM / g;
-  const nReduced = absN / g;
+  const g = gcd(m, n) || 1;
+  const mR = m / g;
+  const nR = n / g;
 
   // Calculate the hypotenuse (scaling factor from rotation)
-  const hypotSquared = mReduced * mReduced + nReduced * nReduced;
+  const hypotSquared = mR * mR + nR * nR;
   const hypot = Math.sqrt(hypotSquared);
 
   // For a rotated rectangular lattice, the periods in x and y are:
   // Period_x = w·h·(m² + n²) / gcd(w·m, h·n) (in scaled coords)
   // Period_y = w·h·(m² + n²) / gcd(w·n, h·m) (in scaled coords)
   // Divide by hypot to get actual pixel dimensions
-  const gcdForWidth = gcd(imageWidth * mReduced, imageHeight * nReduced);
-  const gcdForHeight = gcd(imageWidth * nReduced, imageHeight * mReduced);
+  const gcds = {
+    x: gcd(imageWidth * mR, imageHeight * nR),
+    y: gcd(imageWidth * nR, imageHeight * mR),
+  };
 
   const width = Math.round(
-    (imageWidth * imageHeight * hypotSquared) / (gcdForWidth * hypot),
+    (imageWidth * imageHeight * hypotSquared) / (gcds.x * hypot),
   );
   const height = Math.round(
-    (imageWidth * imageHeight * hypotSquared) / (gcdForHeight * hypot),
+    (imageWidth * imageHeight * hypotSquared) / (gcds.y * hypot),
   );
 
   return { width, height };
@@ -194,12 +181,6 @@ export async function getImageProperties(
   imagePath: string,
 ): Promise<ImageProperties> {
   const data: Uint8Array = await Deno.readFile(imagePath);
-
-  const properties = {
-    width: 0,
-    height: 0,
-    format: "",
-  };
 
   const metadata = await sharp(data).metadata();
 
