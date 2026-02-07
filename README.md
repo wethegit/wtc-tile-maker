@@ -21,6 +21,10 @@ deno run -A main.ts generate -a 3 input.png
 
 # List all available rational angles
 deno run -A main.ts list
+
+# Help
+deno run -A main.ts help
+
 ```
 
 The output file will be saved in the same directory as the input with the angle appended to the filename (e.g., `input-tile-45.png`).
