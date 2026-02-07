@@ -85,11 +85,18 @@ export function lcm(a: number, b: number): number {
  * Calculate tile dimensions for a given angle
  *
  * For a rational angle with tan(θ) = m/n, when we rotate a tiling pattern,
- * the rotated pattern repeats at intervals of sqrt(m² + n²) times the original period.
+ * the rotated lattice must align back to itself for seamless tiling.
  *
- * To create a seamlessly tileable output:
- * - The output dimensions must be the input dimensions × sqrt(m² + n²) / gcd(m,n)
- * - This ensures the rotated grid aligns back to integer positions
+ * The rotated tile centers form a lattice with basis vectors:
+ *   v1 = (w·n, w·m) / √(m²+n²)
+ *   v2 = (-h·m, h·n) / √(m²+n²)
+ *
+ * For the output rectangle to tile seamlessly, its dimensions must equal
+ * the periods of this rotated lattice in x and y directions:
+ *   width  = w·h·(m² + n²) / gcd(w·m, h·n)
+ *   height = w·h·(m² + n²) / gcd(w·n, h·m)
+ *
+ * Divided by √(m²+n²) to convert back to pixel coordinates.
  */
 export function calculateTileDimensions(
   imageWidth: number,
@@ -113,21 +120,30 @@ export function calculateTileDimensions(
     return { width: imageHeight, height: imageWidth };
   }
 
-  // For arctan(m/n), the period of the rotated pattern is sqrt(m² + n²) times
-  // the original tile size. We divide by gcd to get the minimal period.
+  // Reduce m and n by their GCD to get the minimal angle representation
   const g = gcd(absM, absN) || 1;
   const mReduced = absM / g;
   const nReduced = absN / g;
 
-  // The hypotenuse of the reduced triangle gives us the scale factor
-  const hypotenuse = Math.hypot(mReduced, nReduced);
+  // Calculate the hypotenuse (scaling factor from rotation)
+  const hypotSquared = mReduced * mReduced + nReduced * nReduced;
+  const hypot = Math.sqrt(hypotSquared);
 
-  // Output dimensions: scale input by hypot and round to ensure
-  // we have integer pixels that maintain the tiling period
-  return {
-    width: Math.round(imageWidth * hypotenuse),
-    height: Math.round(imageHeight * hypotenuse),
-  };
+  // For a rotated rectangular lattice, the periods in x and y are:
+  // Period_x = w·h·(m² + n²) / gcd(w·m, h·n) (in scaled coords)
+  // Period_y = w·h·(m² + n²) / gcd(w·n, h·m) (in scaled coords)
+  // Divide by hypot to get actual pixel dimensions
+  const gcdForWidth = gcd(imageWidth * mReduced, imageHeight * nReduced);
+  const gcdForHeight = gcd(imageWidth * nReduced, imageHeight * mReduced);
+
+  const width = Math.round(
+    (imageWidth * imageHeight * hypotSquared) / (gcdForWidth * hypot),
+  );
+  const height = Math.round(
+    (imageWidth * imageHeight * hypotSquared) / (gcdForHeight * hypot),
+  );
+
+  return { width, height };
 }
 
 /**
