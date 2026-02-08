@@ -1,6 +1,7 @@
 import { parseArgs } from "@std/cli/parse-args";
 import { relative } from "@std/path";
 import { existsSync } from "@std/fs/exists";
+import sharp from "sharp";
 
 import {
   findClosestRationalAngle,
@@ -176,7 +177,7 @@ async function generate() {
     throw new Error(`
 Error: image output dimensions exceed maximum valid size of ${maxValidSize}px or are inclaculable (zero or infinity).
 ${validationErrors.join("\n")}
-Suggested fix: choose a different rational angle or increase the maximum valid size with the -v option.
+Suggested fix: choose a different rational angle or increase the maximum valid size with the -s option.
     `);
   }
 
@@ -230,7 +231,9 @@ try {
   await main();
 } catch (error) {
   if (error instanceof Error) {
-    console.error(error.message);
+    if (error.message == "Input image exceeds pixel limit")
+      console.log(`Error: ${error.message}. Try setting the -l flag.`);
+    else console.error(`Error: ${error.message}`);
   } else {
     console.error(error);
   }

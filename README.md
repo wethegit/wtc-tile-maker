@@ -118,6 +118,28 @@ You can also run `deno -A main.ts list` to see these angles.
 
 ---
 
+## Recommended Input Aspect Ratios
+
+The output tile size depends on how well the input dimensions align with the m:n ratios of the angles. For best results, use these aspect ratios:
+
+### Best Aspect Ratios
+
+| Aspect Ratio       | Works Best With Angles   | Notes                                            |
+| ------------------ | ------------------------ | ------------------------------------------------ |
+| **1:1** (square)   | All angles               | Always produces predictable, symmetrical outputs |
+| **2:1** or **1:2** | arctan(1/2), arctan(2)   | Aligns perfectly with 26.565° and 63.435°        |
+| **3:2** or **2:3** | arctan(2/3), arctan(3/2) | Good for 33.69° and 56.31°; common photo ratio   |
+| **4:3** or **3:4** | arctan(3/4), arctan(4/3) | Good for 36.87° and 53.13°; classic screen ratio |
+| **3:1** or **1:3** | arctan(1/3), arctan(3)   | Good for 18.435° and 71.565°                     |
+| **4:1** or **1:4** | arctan(1/4), arctan(4)   | Good for 14.036° and 75.964°                     |
+| **5:1** or **1:5** | arctan(1/5), arctan(5)   | Good for 11.31° and 78.69°                       |
+
+### Ratios to Avoid
+
+Aspect ratios with **prime numbers > 5** (like 7:3, 11:4, 13:8) or **irrational proportions** will produce larger outputs because the GCD calculations yield smaller divisors.
+
+---
+
 ## Usage Examples
 
 ### Show Help
@@ -134,15 +156,27 @@ deno -A main.ts list
 
 ### Generate a Tile
 
-Generate a rotated tile from `Checker.png` using angle index 27, margin 3, and max size 6000:
+Generate a rotated tile from `Checker.png` using angle index 27, and max size 6000:
 
 | Step    | Description                                                                           | Example                                           |
 | ------- | ------------------------------------------------------------------------------------- | ------------------------------------------------- |
 | Input   | Source image to be tiled and rotated.                                                 | <img src="Checker.png" width="300" />             |
-| Command | Command to generate a rotated tile using angle index 27, margin 3, and max size 6000. | `generate -lv -a 27 -m 3 -s 6000 Checker.png`     |
+| Command | Command to generate a rotated tile using angle index 27, margin 3, and max size 6000. | `generate -lv -a 27 -s 6000 Checker.png`          |
 | Output  | Resulting seamlessly tileable image after processing.                                 | <img src="Checker-tile-63.435.png" width="300" /> |
 
-This will output a file like `Checker-tile-63.435.png`.
+This will also work with images of different aspect ratios (like 3×2). For example. this enerates a rotated tile from `3x2-checker.png` using 45°:
+
+| Step    | Description                                      | Example                                      |
+| ------- | ------------------------------------------------ | -------------------------------------------- |
+| Input   | Source image with 3×2 aspect ratio.              | <img src="3x2-checker.png" width="300" />    |
+| Command | Command to generate a rotated tile at 45°.       | `generate -d 45 3x2-checker.png`             |
+| Output  | Seamlessly tileable image after rotating at 45°. | <img src="3x2-checker-45.png" width="300" /> |
+
+_N.B._ Notice, here, how there seems to be a piece missing! This is because the default tile margin is too small to make this rotated tiles cover the output dimensions. This command should be updated to `generate -m 2 -d 45 3x2-checker.png`.
+
+#### A warning about sizes and appropriate aspect ratios
+
+Sometimes, a combination of input size and rotation will produce an output that is either too large or creating an appropriate output tile is just beyong the capabilities of this math. In this case you should likely fall back to hacky methods or get a tile produces in a more predictable aspect ratio.
 
 ### Generate with a Specific Degree
 
