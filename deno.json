@@ -7,5 +7,6 @@
   },
   "tasks": {
     "compile": "deno compile --allow-all main.ts"
-  }
+  },
+  "version": "0.0.1"
 }
