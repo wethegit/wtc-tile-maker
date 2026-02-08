@@ -172,7 +172,7 @@ This will also work with images of different aspect ratios (like 3×2). For exam
 | Command | Command to generate a rotated tile at 45°.       | `generate -d 45 3x2-checker.png`                  |
 | Output  | Seamlessly tileable image after rotating at 45°. | <img src="3x2-checker-tile-45.png" width="300" /> |
 
-_N.B._ Notice, here, how there seems to be a piece missing! This is because the default tile margin is too small to make this rotated tiles cover the output dimensions. This command should be updated to `generate -m 2 -d 45 3x2-checker.png`.
+_N.B._ Notice, here, how there seems to be a piece missing! This is because the default tile margin is too small to make these rotated tiles cover the output dimensions. This command should be updated to `generate -m 2 -d 45 3x2-checker.png`.
 
 #### A warning about sizes and appropriate aspect ratios
 

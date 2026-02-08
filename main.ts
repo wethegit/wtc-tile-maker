@@ -1,7 +1,6 @@
 import { parseArgs } from "@std/cli/parse-args";
 import { relative } from "@std/path";
 import { existsSync } from "@std/fs/exists";
-import sharp from "sharp";
 
 import {
   findClosestRationalAngle,
@@ -204,26 +203,23 @@ Suggested fix: choose a different rational angle or increase the maximum valid s
 }
 
 async function main() {
-  const commands = ["help", "list", "generate", "version"] as const;
-
-  const command = (args._[0] ?? "help") as (typeof commands)[number];
-  if (commands.includes(command)) {
-    switch (command) {
-      case "help":
-        help();
-        break;
-      case "list":
-        list();
-        break;
-      case "generate":
-        await generate();
-        break;
-      case "version":
-        console.log("Version 0.0.1");
-        break;
-    }
-  } else {
-    throw new Error("Unknown command" + (args._[0] ? `: ${args._[0]}` : "."));
+  type Command = "help" | "list" | "generate" | "version";
+  const command = (args._[0] ?? "help") as Command;
+  switch (command) {
+    case "help":
+      help();
+      break;
+    case "list":
+      list();
+      break;
+    case "generate":
+      await generate();
+      break;
+    case "version":
+      console.log("Version 0.0.1");
+      break;
+    default:
+      throw new Error("Unknown command" + (args._[0] ? `: ${args._[0]}` : "."));
   }
 }
 
