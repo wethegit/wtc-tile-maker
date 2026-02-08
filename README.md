@@ -166,11 +166,11 @@ Generate a rotated tile from `Checker.png` using angle index 27, and max size 60
 
 This will also work with images of different aspect ratios (like 3×2). For example. this enerates a rotated tile from `3x2-checker.png` using 45°:
 
-| Step    | Description                                      | Example                                      |
-| ------- | ------------------------------------------------ | -------------------------------------------- |
-| Input   | Source image with 3×2 aspect ratio.              | <img src="3x2-checker.png" width="300" />    |
-| Command | Command to generate a rotated tile at 45°.       | `generate -d 45 3x2-checker.png`             |
-| Output  | Seamlessly tileable image after rotating at 45°. | <img src="3x2-checker-45.png" width="300" /> |
+| Step    | Description                                      | Example                                           |
+| ------- | ------------------------------------------------ | ------------------------------------------------- |
+| Input   | Source image with 3×2 aspect ratio.              | <img src="3x2-checker.png" width="300" />         |
+| Command | Command to generate a rotated tile at 45°.       | `generate -d 45 3x2-checker.png`                  |
+| Output  | Seamlessly tileable image after rotating at 45°. | <img src="3x2-checker-tile-45.png" width="300" /> |
 
 _N.B._ Notice, here, how there seems to be a piece missing! This is because the default tile margin is too small to make this rotated tiles cover the output dimensions. This command should be updated to `generate -m 2 -d 45 3x2-checker.png`.
 
