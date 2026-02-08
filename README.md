@@ -136,17 +136,11 @@ deno -A main.ts list
 
 Generate a rotated tile from `Checker.png` using angle index 27, margin 3, and max size 6000:
 
-**Input:**
-
-![Checker.png](Checker.png)
-
-```sh
-deno -A main.ts generate -lv -a 27 -m 3 -s 6000 Checker.png
-```
-
-**Output:**
-
-![Checker-tile-63.435.png](Checker-tile-63.435.png)
+| Step    | Description                                                                           | Example / Output Image                                                 |
+| ------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Input   | Source image to be tiled and rotated.                                                 | ![Checker.png](Checker.png)                                            |
+| Command | Command to generate a rotated tile using angle index 27, margin 3, and max size 6000. | <pre>deno -A main.ts generate -lv -a 27 -m 3 -s 6000 Checker.png</pre> |
+| Output  | Resulting seamlessly tileable image after processing.                                 | ![Checker-tile-63.435.png](Checker-tile-63.435.png)                    |
 
 This will output a file like `Checker-tile-63.435.png`.
 
