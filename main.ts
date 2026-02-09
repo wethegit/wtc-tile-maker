@@ -96,6 +96,17 @@ function help() {
     "font-weight: bold",
     "font-weight: normal",
   );
+  console.log(`
+## Examples ##
+1. Generate a tile with a specific angle index and margin:
+   wtc-tile-maker generate -a 27 -m 3 Checker.png
+
+2. Generate a tile with a desired angle in degrees:
+   wtc-tile-maker generate -d 45 Checker.png
+
+3. List available rational angles:
+   wtc-tile-maker list
+`);
 }
 
 function list() {
@@ -108,29 +119,29 @@ function list() {
   console.table(tableData);
 }
 
-async function generate() {
-  const {
-    angleOption = 0,
-    degrees,
-    output,
-    maxValidSize,
-    allowLargeBuffers,
-    quality,
-    tileMargin,
-    verbose,
-    _: [, input],
-  } = args as unknown as {
-    angleOption?: number;
-    degrees?: number;
-    maxValidSize?: number;
-    output?: string;
-    allowLargeBuffers?: boolean;
-    quality?: number;
-    tileMargin?: number;
-    verbose?: boolean;
-    _: [string, string | undefined];
-  };
+export interface generateOptions {
+  angleOption?: number;
+  degrees?: number;
+  maxValidSize?: number;
+  output?: string;
+  allowLargeBuffers?: boolean;
+  quality?: number;
+  tileMargin?: number;
+  verbose?: boolean;
+  input?: string;
+}
 
+async function generate({
+  angleOption = 0,
+  degrees,
+  output,
+  maxValidSize,
+  allowLargeBuffers,
+  quality,
+  tileMargin,
+  verbose,
+  input,
+}: generateOptions) {
   // Check if we have an input file
   if (!input) throw new Error("Input file is required for generation.");
   const inputPath = relative(Deno.cwd(), input);
@@ -213,7 +224,7 @@ async function main() {
       list();
       break;
     case "generate":
-      await generate();
+      await generate({ ...args, input: args._[1] } as generateOptions);
       break;
     case "version":
       console.log("Version 0.0.1");

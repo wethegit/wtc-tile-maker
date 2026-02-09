@@ -208,6 +208,19 @@ export function getOutputPath({
   return output ? (output as string) : `${inputDir}/${outputFileName}`;
 }
 
+export interface generateTileOptions {
+  input: string;
+  output: string;
+  metadata: ImageProperties;
+  tileWidth: number;
+  tileHeight: number;
+  angle: number;
+  limitInputPixels?: boolean;
+  quality?: number;
+  tileMargin?: number;
+  verbose?: boolean;
+}
+
 // Generate the output image
 export async function generateTile({
   input,
@@ -220,18 +233,7 @@ export async function generateTile({
   quality = 90,
   tileMargin = 1,
   verbose = false,
-}: {
-  input: string;
-  output: string;
-  metadata: ImageProperties;
-  tileWidth: number;
-  tileHeight: number;
-  angle: number;
-  limitInputPixels?: boolean;
-  quality?: number;
-  tileMargin?: number;
-  verbose?: boolean;
-}) {
+}: generateTileOptions) {
   // Calculate the diagonal of the output tile to ensure full coverage during rotation
   const diagonal = Math.ceil(Math.hypot(tileWidth, tileHeight));
 
@@ -268,6 +270,8 @@ export async function generateTile({
       });
     }
   }
+
+  console.log("Starting tile generation, this may take a moment.");
 
   // Create the tiled canvas - this is the canvas that covers the whole area and can be very large
   // Compose the operations, and output a png buffer for further processing
