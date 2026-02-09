@@ -300,7 +300,7 @@ export async function generateTile({
 
   const rotatedMetadata = await rotatedCanvas.metadata();
 
-  // Step 3: Extract the seamless tile from the center.
+  // Extract the seamless tile from the center.
   const B = {
     left: Math.max(0, Math.floor(rotatedMetadata.width! / 2 - tileWidth / 2)),
     top: Math.max(0, Math.floor(rotatedMetadata.height! / 2 - tileHeight / 2)),
