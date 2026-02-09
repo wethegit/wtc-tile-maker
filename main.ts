@@ -10,6 +10,7 @@ import {
   generateTile,
   RATIONAL_ANGLES,
   validateDimensions,
+  GenerateTileOptions,
 } from "./src/lib.ts";
 
 const args = parseArgs(Deno.args, {
@@ -119,7 +120,7 @@ function list() {
   console.table(tableData);
 }
 
-export interface generateOptions {
+export interface GenerateOptions {
   angleOption?: number;
   degrees?: number;
   maxValidSize?: number;
@@ -141,7 +142,7 @@ async function generate({
   tileMargin,
   verbose,
   input,
-}: generateOptions) {
+}: GenerateOptions) {
   // Check if we have an input file
   if (!input) throw new Error("Input file is required for generation.");
   const inputPath = relative(Deno.cwd(), input);
@@ -208,7 +209,7 @@ Suggested fix: choose a different rational angle or increase the maximum valid s
     quality,
     tileMargin,
     verbose,
-  });
+  } as GenerateTileOptions);
 
   console.log(`Output saved to: ${outputPath}`);
 }
@@ -224,7 +225,7 @@ async function main() {
       list();
       break;
     case "generate":
-      await generate({ ...args, input: args._[1] } as generateOptions);
+      await generate({ ...args, input: args._[1] } as GenerateOptions);
       break;
     case "version":
       console.log("Version 0.0.1");

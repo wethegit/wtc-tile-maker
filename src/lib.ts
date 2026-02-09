@@ -215,7 +215,7 @@ export function getOutputPath({
   return output ? (output as string) : `${inputDir}/${outputFileName}`;
 }
 
-export interface generateTileOptions {
+export interface GenerateTileOptions {
   input: string;
   output: string;
   metadata: ImageProperties;
@@ -240,7 +240,7 @@ export async function generateTile({
   quality = 90,
   tileMargin = 1,
   verbose = false,
-}: generateTileOptions) {
+}: GenerateTileOptions) {
   const diagonal = Math.ceil(Math.hypot(tileWidth, tileHeight));
 
   const tileRepeat = {
