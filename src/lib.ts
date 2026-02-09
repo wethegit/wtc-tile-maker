@@ -1,11 +1,18 @@
 import { basename, dirname, extname } from "@std/path";
 import sharp from "sharp";
 
+export interface angleEntry {
+  degrees: number;
+  m: number;
+  n: number;
+  label: string;
+}
+
 /**
  * Rational angles for tiling - these are angles where tan(θ) = m/n for small integers m, n
  * These angles produce periodic tilings when used for rotation.
  */
-export const RATIONAL_ANGLES = [
+export const RATIONAL_ANGLES: angleEntry[] = [
   { degrees: 0, m: 0, n: 1, label: "0°" },
   { degrees: 90, m: 1, n: 0, label: "90°" },
   { degrees: -90, m: -1, n: 0, label: "-90°" },
@@ -40,7 +47,7 @@ export const RATIONAL_ANGLES = [
 /**
  * Find the closest rational angle to the given angle
  */
-export function findClosestRationalAngle(angle: number) {
+export function findClosestRationalAngle(angle: number): angleEntry {
   // Normalize angle to 0-360 range for matching
   let normalizedAngle = angle % 360;
   if (normalizedAngle < 0) normalizedAngle += 360;
@@ -170,7 +177,7 @@ export function validateDimensions({
   return errors;
 }
 
-interface ImageProperties {
+export interface ImageProperties {
   width: number;
   height: number;
   format: string;
@@ -234,20 +241,16 @@ export async function generateTile({
   tileMargin = 1,
   verbose = false,
 }: generateTileOptions) {
-  // Calculate the diagonal of the output tile to ensure full coverage during rotation
   const diagonal = Math.ceil(Math.hypot(tileWidth, tileHeight));
 
-  // Calculate how many times the tile needs to be repeated in each direction to cover the diagonal
-  // Pad with some extra tiles to ensure coverage after rotation
   const tileRepeat = {
     x: Math.ceil((diagonal * 2) / metadata.width) + tileMargin,
     y: Math.ceil((diagonal * 2) / metadata.height) + tileMargin,
   };
 
-  // The dimensions of the large tiled canvas
   const tiledDimensions = {
-    x: metadata.width * tileRepeat.x,
-    y: metadata.height * tileRepeat.y,
+    width: metadata.width * tileRepeat.x,
+    height: metadata.height * tileRepeat.y,
   };
 
   if (verbose)
@@ -257,55 +260,53 @@ export async function generateTile({
       tileRepeat,
     );
 
-  // BThis is the loop that generates the tiling pattern.
-  // I looked into using a large native tile in Sharp but this ended up being more reliable.
-  const inputBuffer = await sharp(input).png().toBuffer();
+  console.log("Starting tile generation, this may take a moment.");
+
   const compositeOps = [];
   for (let y = 0; y < tileRepeat.y; y++) {
     for (let x = 0; x < tileRepeat.x; x++) {
       compositeOps.push({
-        input: inputBuffer,
+        input,
         left: x * metadata.width,
         top: y * metadata.height,
       });
     }
   }
 
-  console.log("Starting tile generation, this may take a moment.");
-
-  // Create the tiled canvas - this is the canvas that covers the whole area and can be very large
-  // Compose the operations, and output a png buffer for further processing
-  const tiledCanvas = await sharp({
+  // Create the tiled pattern and "bake" it into a raw buffer.
+  // Using 'raw' is significantly faster than 'png' or 'jpeg'.
+  const { data, info } = await sharp({
     limitInputPixels,
     create: {
-      width: tiledDimensions.x,
-      height: tiledDimensions.y,
+      width: tiledDimensions.width,
+      height: tiledDimensions.height,
       channels: 4,
       background: { r: 0, g: 0, b: 0, alpha: 0 },
     },
   })
     .composite(compositeOps)
-    .png()
-    .toBuffer();
+    .raw()
+    .toBuffer({ resolveWithObject: true });
 
-  // Rotate the canvas, this will inevitably result in a larger image still and may cause mem issues?
-  // This requires the tile canvas buffer because Sharp does not apply rotations in-place
-  const rotatedCanvas = await sharp(tiledCanvas, { limitInputPixels }).rotate(
-    angle,
-  );
+  // Rotate the baked raw buffer.
+  const rotatedCanvas = sharp(data, {
+    raw: {
+      width: info.width,
+      height: info.height,
+      channels: info.channels,
+    },
+    limitInputPixels,
+  }).rotate(angle);
 
   const rotatedMetadata = await rotatedCanvas.metadata();
 
-  // Generate the bounds for the cropped image, generating a bounds object from appropriate values
-  // left = center point - half the tile width etc.
+  // Step 3: Extract the seamless tile from the center.
   const B = {
-    left: Math.max(0, Math.floor(rotatedMetadata.width / 2 - tileWidth / 2)),
-    top: Math.max(0, Math.floor(rotatedMetadata.height / 2 - tileHeight / 2)),
+    left: Math.max(0, Math.floor(rotatedMetadata.width! / 2 - tileWidth / 2)),
+    top: Math.max(0, Math.floor(rotatedMetadata.height! / 2 - tileHeight / 2)),
     width: tileWidth,
     height: tileHeight,
   };
-  B.width = Math.min(B.width, rotatedMetadata.width - B.left);
-  B.height = Math.min(B.height, rotatedMetadata.height - B.top);
 
-  await rotatedCanvas.extract(B).png({ quality: quality }).toFile(output);
+  await rotatedCanvas.extract(B).png({ quality }).toFile(output);
 }
