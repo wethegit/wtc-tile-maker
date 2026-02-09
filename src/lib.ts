@@ -262,17 +262,6 @@ export async function generateTile({
 
   console.log("Starting tile generation, this may take a moment.");
 
-  const compositeOps = [];
-  for (let y = 0; y < tileRepeat.y; y++) {
-    for (let x = 0; x < tileRepeat.x; x++) {
-      compositeOps.push({
-        input,
-        left: x * metadata.width,
-        top: y * metadata.height,
-      });
-    }
-  }
-
   // Create the tiled pattern and "bake" it into a raw buffer.
   // Using 'raw' is significantly faster than 'png' or 'jpeg'.
   const { data, info } = await sharp({
@@ -284,7 +273,12 @@ export async function generateTile({
       background: { r: 0, g: 0, b: 0, alpha: 0 },
     },
   })
-    .composite(compositeOps)
+    .composite([
+      {
+        input,
+        tile: true,
+      },
+    ])
     .raw()
     .toBuffer({ resolveWithObject: true });
 
