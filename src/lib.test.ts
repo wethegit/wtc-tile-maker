@@ -1,4 +1,4 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { assert, assertEquals, assertRejects } from "@std/assert";
 import { getImageProperties } from "./lib.ts";
 
 Deno.test("getImageProperties - should return correct properties for valid PNG image", async () => {
@@ -45,6 +45,6 @@ Deno.test("getImageProperties - should return properties with valid types", asyn
   assertEquals(typeof properties.format, "string");
   
   // Verify positive dimensions
-  assertEquals(properties.width > 0, true);
-  assertEquals(properties.height > 0, true);
+  assert(properties.width > 0);
+  assert(properties.height > 0);
 });
