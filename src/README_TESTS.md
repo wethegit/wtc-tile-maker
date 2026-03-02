@@ -88,7 +88,8 @@ The `validateDimensions` function validates tile dimensions and returns an array
 ### Error Messages
 
 - `"Tile dimensions cannot be zero"` - When width or height is 0
-- `"Tile dimensions resulted in infinity"` - When width or height is not finite (Infinity or NaN)
+- `"Tile dimensions resulted in infinity"` - When width or height is not finite (includes both Infinity and NaN values)
+  - **Note**: This error message is technically imprecise for NaN values, but that's the current implementation behavior
 - `"Tile width (Xpx) exceeds maximum of Ypx"` - When width > validWidth
 - `"Tile height (Xpx) exceeds maximum of Ypx"` - When height > validHeight
 
@@ -96,5 +97,10 @@ The `validateDimensions` function validates tile dimensions and returns an array
 
 - Infinity values also trigger the "exceeds maximum" error (since Infinity > any number)
 - NaN values are caught by the `!isFinite()` check
+  - **Note**: The error message says "infinity" but this also covers NaN values
 - Negative infinity is treated the same as positive infinity
 - Multiple errors can be returned for a single validation call
+
+## Potential Improvements
+
+While testing, we noted that the error message "Tile dimensions resulted in infinity" is used for both Infinity and NaN values. This is technically accurate from an implementation standpoint (both fail the `isFinite()` check), but could be more precise. A future enhancement could differentiate between these cases for clearer error messages.
