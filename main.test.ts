@@ -69,8 +69,8 @@ Deno.test("generate function - throws error when input file doesn't exist", asyn
 });
 
 Deno.test("generate function - validates angle option range", async () => {
-  // Create a simple test image
-  const testImagePath = "/tmp/test-image-for-main-test.png";
+  // Create a simple test image in a temp file
+  const testImagePath = await Deno.makeTempFile({ suffix: ".png" });
   const pngData = new Uint8Array([
     137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 1,
     0, 0, 0, 1, 8, 2, 0, 0, 0, 144, 119, 83, 222, 0, 0, 0, 12, 73, 68, 65, 84,
