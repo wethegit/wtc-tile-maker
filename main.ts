@@ -13,7 +13,28 @@ import {
   GenerateTileOptions,
 } from "./src/lib.ts";
 
-const args = parseArgs(Deno.args, {
+// Define a proper interface for parsed arguments
+interface ParsedArgs {
+  _: (string | number)[];
+  angleOption?: number;
+  degrees?: number;
+  output?: string;
+  maxValidSize?: number;
+  allowLargeBuffers?: boolean;
+  quality?: number;
+  tileMargin?: number;
+  verbose?: boolean;
+  a?: number;
+  d?: number;
+  o?: string;
+  s?: number;
+  l?: boolean;
+  q?: number;
+  m?: number;
+  v?: boolean;
+}
+
+const args: ParsedArgs = parseArgs(Deno.args, {
   alias: {
     angleOption: "a",
     degrees: "d",
@@ -209,14 +230,26 @@ Suggested fix: choose a different rational angle or increase the maximum valid s
     quality,
     tileMargin,
     verbose,
-  } as GenerateTileOptions);
+  });
 
   console.log(`Output saved to: ${outputPath}`);
 }
 
+// Type guard for valid commands
+function isValidCommand(cmd: unknown): cmd is "help" | "list" | "generate" | "version" {
+  return typeof cmd === "string" && 
+    ["help", "list", "generate", "version"].includes(cmd);
+}
+
 async function main() {
-  type Command = "help" | "list" | "generate" | "version";
-  const command = (args._[0] ?? "help") as Command;
+  const commandInput = args._[0] ?? "help";
+  
+  if (!isValidCommand(commandInput)) {
+    throw new Error("Unknown command" + (args._[0] ? `: ${args._[0]}` : "."));
+  }
+  
+  const command = commandInput;
+  
   switch (command) {
     case "help":
       help();
@@ -224,14 +257,28 @@ async function main() {
     case "list":
       list();
       break;
-    case "generate":
-      await generate({ ...args, input: args._[1] } as GenerateOptions);
+    case "generate": {
+      const input = args._[1];
+      if (typeof input !== "string") {
+        throw new Error("Input file must be a string");
+      }
+      
+      await generate({
+        angleOption: args.angleOption,
+        degrees: args.degrees,
+        output: args.output,
+        maxValidSize: args.maxValidSize,
+        allowLargeBuffers: args.allowLargeBuffers,
+        quality: args.quality,
+        tileMargin: args.tileMargin,
+        verbose: args.verbose,
+        input: input,
+      });
       break;
+    }
     case "version":
       console.log("Version 0.0.1");
       break;
-    default:
-      throw new Error("Unknown command" + (args._[0] ? `: ${args._[0]}` : "."));
   }
 }
 
