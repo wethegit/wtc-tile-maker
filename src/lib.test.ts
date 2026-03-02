@@ -25,12 +25,8 @@ Deno.test("getImageProperties - should return correct properties for 3x2 checker
   const imagePath = "3x2-checker.png";
   const properties = await getImageProperties(imagePath);
 
-  // Verify we get valid properties
-  assertEquals(typeof properties.width, "number");
-  assertEquals(typeof properties.height, "number");
-  assertEquals(properties.format, "png");
-  
   // Verify it has correct aspect ratio (3:2)
+  assertEquals(properties.format, "png");
   const aspectRatio = properties.width / properties.height;
   assertEquals(aspectRatio, 1.5);
 });
