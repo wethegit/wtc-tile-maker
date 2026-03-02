@@ -102,7 +102,7 @@ export function lcm(a: number, b: number): number {
 export function calculateTileDimensions(
   imageWidth: number,
   imageHeight: number,
-  rationalAngle: { m: number; n: number },
+  rationalAngle: Pick<AngleEntry, "m" | "n">,
 ) {
   // Use absolute values for dimension calculations (direction doesn't affect size)
   const m = Math.abs(rationalAngle.m);
@@ -148,12 +148,7 @@ export function validateDimensions({
   height,
   validWidth = 2000,
   validHeight = validWidth,
-}: {
-  width: number;
-  height: number;
-  validWidth?: number;
-  validHeight?: number;
-}): string[] {
+}: ValidateDimensionsOptions): string[] {
   const errors = [];
 
   if (width === 0 || height === 0) {
@@ -183,6 +178,13 @@ export interface ImageProperties {
   format: string;
 }
 
+export interface ValidateDimensionsOptions {
+  width: number;
+  height: number;
+  validWidth?: number;
+  validHeight?: number;
+}
+
 // Get image properties using ImageMagick
 export async function getImageProperties(
   imagePath: string,
@@ -198,16 +200,18 @@ export async function getImageProperties(
   };
 }
 
+export interface GetOutputPathOptions {
+  input: string;
+  rationalAngle: Pick<AngleEntry, "degrees">;
+  output?: string;
+}
+
 // Get the output path.
 export function getOutputPath({
   input,
   rationalAngle,
   output,
-}: {
-  input: string;
-  rationalAngle: { degrees: number };
-  output?: string;
-}) {
+}: GetOutputPathOptions) {
   const inputExt = extname(input as string);
   const inputBase = basename(input as string, inputExt);
   const inputDir = dirname(input as string);
