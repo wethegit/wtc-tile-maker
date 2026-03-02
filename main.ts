@@ -235,17 +235,21 @@ Suggested fix: choose a different rational angle or increase the maximum valid s
   console.log(`Output saved to: ${outputPath}`);
 }
 
+// Valid command constants
+const VALID_COMMANDS = ["help", "list", "generate", "version"] as const;
+type Command = typeof VALID_COMMANDS[number];
+
 // Type guard for valid commands
-function isValidCommand(cmd: unknown): cmd is "help" | "list" | "generate" | "version" {
+function isValidCommand(cmd: unknown): cmd is Command {
   return typeof cmd === "string" && 
-    ["help", "list", "generate", "version"].includes(cmd);
+    (VALID_COMMANDS as readonly string[]).includes(cmd);
 }
 
 async function main() {
   const commandInput = args._[0] ?? "help";
   
   if (!isValidCommand(commandInput)) {
-    throw new Error("Unknown command" + (args._[0] ? `: ${args._[0]}` : "."));
+    throw new Error(`Unknown command${args._[0] ? `: ${args._[0]}` : '.'}`);
   }
   
   const command = commandInput;
