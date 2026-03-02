@@ -50,6 +50,20 @@ The output file will be saved in the same directory as the input with the angle 
    deno run -A main.ts
    ```
 
+### Running Tests
+
+To run the test suite:
+
+```sh
+deno task test
+```
+
+Or run tests directly:
+
+```sh
+deno test --allow-all
+```
+
 ---
 
 ## CLI Usage
