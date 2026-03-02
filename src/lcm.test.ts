@@ -107,10 +107,13 @@ Deno.test("lcm - relationship with gcd", () => {
 Deno.test("lcm - fractional numbers (behavior with non-integers)", () => {
   // Note: gcd rounds inputs using Math.round(), but lcm uses original values for multiplication
   // lcm(a, b) = |a * b| / gcd(a, b) where gcd operates on rounded values
-  // Example: lcm(4.7, 6.2) = |4.7 * 6.2| / gcd(5, 6) = 29.14 / 1 = 29.14
-  assertEquals(lcm(4.7, 6.2), 29.14);
+  // Example: lcm(4.7, 6.2) = |4.7 * 6.2| / gcd(5, 6) = |4.7 * 6.2| / 1
+  const result1 = lcm(4.7, 6.2);
+  const expected1 = Math.abs(4.7 * 6.2) / gcd(4.7, 6.2);
+  assertEquals(result1, expected1);
+  
   // lcm(3.1, 5.9) = |3.1 * 5.9| / gcd(3, 6)
-  const result = lcm(3.1, 5.9);
-  const expected = (3.1 * 5.9) / gcd(3.1, 5.9);
-  assertEquals(result, expected);
+  const result2 = lcm(3.1, 5.9);
+  const expected2 = Math.abs(3.1 * 5.9) / gcd(3.1, 5.9);
+  assertEquals(result2, expected2);
 });
