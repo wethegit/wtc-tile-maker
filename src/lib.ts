@@ -1,7 +1,7 @@
 import { basename, dirname, extname } from "@std/path";
 import sharp from "sharp";
 
-export interface angleEntry {
+export interface AngleEntry {
   degrees: number;
   m: number;
   n: number;
@@ -12,7 +12,7 @@ export interface angleEntry {
  * Rational angles for tiling - these are angles where tan(θ) = m/n for small integers m, n
  * These angles produce periodic tilings when used for rotation.
  */
-export const RATIONAL_ANGLES: angleEntry[] = [
+export const RATIONAL_ANGLES: AngleEntry[] = [
   { degrees: 0, m: 0, n: 1, label: "0°" },
   { degrees: 90, m: 1, n: 0, label: "90°" },
   { degrees: -90, m: -1, n: 0, label: "-90°" },
@@ -47,7 +47,7 @@ export const RATIONAL_ANGLES: angleEntry[] = [
 /**
  * Find the closest rational angle to the given angle
  */
-export function findClosestRationalAngle(angle: number): angleEntry {
+export function findClosestRationalAngle(angle: number): AngleEntry {
   // Normalize angle to 0-360 range for matching
   let normalizedAngle = angle % 360;
   if (normalizedAngle < 0) normalizedAngle += 360;
@@ -102,7 +102,7 @@ export function lcm(a: number, b: number): number {
 export function calculateTileDimensions(
   imageWidth: number,
   imageHeight: number,
-  rationalAngle: { m: number; n: number },
+  rationalAngle: Pick<AngleEntry, "m" | "n">,
 ) {
   // Use absolute values for dimension calculations (direction doesn't affect size)
   const m = Math.abs(rationalAngle.m);
@@ -148,12 +148,7 @@ export function validateDimensions({
   height,
   validWidth = 2000,
   validHeight = validWidth,
-}: {
-  width: number;
-  height: number;
-  validWidth?: number;
-  validHeight?: number;
-}): string[] {
+}: ValidateDimensionsOptions): string[] {
   const errors = [];
 
   if (width === 0 || height === 0) {
@@ -183,6 +178,18 @@ export interface ImageProperties {
   format: string;
 }
 
+/**
+ * Options for validating tile dimensions
+ */
+export interface ValidateDimensionsOptions {
+  width: number;
+  height: number;
+  /** Maximum valid width in pixels (default: 2000) */
+  validWidth?: number;
+  /** Maximum valid height in pixels (default: validWidth) */
+  validHeight?: number;
+}
+
 // Get image properties using ImageMagick
 export async function getImageProperties(
   imagePath: string,
@@ -198,16 +205,24 @@ export async function getImageProperties(
   };
 }
 
+/**
+ * Options for generating the output file path
+ */
+export interface GetOutputPathOptions {
+  /** Input file path */
+  input: string;
+  /** Rational angle data containing the degrees for filename generation */
+  rationalAngle: Pick<AngleEntry, "degrees">;
+  /** Optional custom output path (default: derived from input) */
+  output?: string;
+}
+
 // Get the output path.
 export function getOutputPath({
   input,
   rationalAngle,
   output,
-}: {
-  input: string;
-  rationalAngle: { degrees: number };
-  output?: string;
-}) {
+}: GetOutputPathOptions) {
   const inputExt = extname(input as string);
   const inputBase = basename(input as string, inputExt);
   const inputDir = dirname(input as string);
