@@ -148,7 +148,7 @@ Deno.test("calculateTileDimensions - handles 26.565 degrees (1:2 ratio)", () => 
   assertEquals(result.height > 0, true);
 });
 
-Deno.test("calculateTileDimensions - handles negative m value", () => {
+Deno.test("calculateTileDimensions - negative m produces same dimensions as positive m", () => {
   const result = calculateTileDimensions(100, 100, { m: -1, n: 1 });
   // Negative m should give same dimensions as positive (absolute value used)
   const positive = calculateTileDimensions(100, 100, { m: 1, n: 1 });
@@ -273,11 +273,12 @@ Deno.test("getOutputPath - handles files in current directory", () => {
   assertEquals(result, "./image-tile-90.png");
 });
 
-Deno.test("getOutputPath - handles negative angles", () => {
+Deno.test("getOutputPath - handles negative angles with double dash", () => {
   const result = getOutputPath({
     input: "/path/to/image.png",
     rationalAngle: { degrees: -45 },
   });
+  // Note: negative angles result in double dash in filename (e.g., -tile--45)
   assertEquals(result, "/path/to/image-tile--45.png");
 });
 
