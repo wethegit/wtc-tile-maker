@@ -1,7 +1,7 @@
 import { basename, dirname, extname } from "@std/path";
 import sharp from "sharp";
 
-export interface angleEntry {
+export interface AngleEntry {
   degrees: number;
   m: number;
   n: number;
@@ -12,7 +12,7 @@ export interface angleEntry {
  * Rational angles for tiling - these are angles where tan(θ) = m/n for small integers m, n
  * These angles produce periodic tilings when used for rotation.
  */
-export const RATIONAL_ANGLES: angleEntry[] = [
+export const RATIONAL_ANGLES: AngleEntry[] = [
   { degrees: 0, m: 0, n: 1, label: "0°" },
   { degrees: 90, m: 1, n: 0, label: "90°" },
   { degrees: -90, m: -1, n: 0, label: "-90°" },
@@ -47,7 +47,7 @@ export const RATIONAL_ANGLES: angleEntry[] = [
 /**
  * Find the closest rational angle to the given angle
  */
-export function findClosestRationalAngle(angle: number): angleEntry {
+export function findClosestRationalAngle(angle: number): AngleEntry {
   // Normalize angle to 0-360 range for matching
   let normalizedAngle = angle % 360;
   if (normalizedAngle < 0) normalizedAngle += 360;
