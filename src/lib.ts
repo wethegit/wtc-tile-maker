@@ -178,10 +178,15 @@ export interface ImageProperties {
   format: string;
 }
 
+/**
+ * Options for validating tile dimensions
+ */
 export interface ValidateDimensionsOptions {
   width: number;
   height: number;
+  /** Maximum valid width in pixels (default: 2000) */
   validWidth?: number;
+  /** Maximum valid height in pixels (default: validWidth) */
   validHeight?: number;
 }
 
@@ -200,9 +205,15 @@ export async function getImageProperties(
   };
 }
 
+/**
+ * Options for generating the output file path
+ */
 export interface GetOutputPathOptions {
+  /** Input file path */
   input: string;
+  /** Rational angle data containing the degrees for filename generation */
   rationalAngle: Pick<AngleEntry, "degrees">;
+  /** Optional custom output path (default: derived from input) */
   output?: string;
 }
 
