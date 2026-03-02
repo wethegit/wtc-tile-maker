@@ -1,0 +1,5 @@
+# Test output
+tests/output/
+
+# Node modules (Deno node_modules dir)
+node_modules/
