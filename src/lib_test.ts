@@ -108,9 +108,9 @@ Deno.test("findClosestRationalAngle - handles negative angle (-90)", () => {
 Deno.test("findClosestRationalAngle - handles negative angle (-30)", () => {
   const result = findClosestRationalAngle(-30);
   // -30 % 360 = -30, then +360 = 330
-  const result2 = findClosestRationalAngle(330);
-  if (result.degrees !== result2.degrees) throw new Error(`Expected ${result2.degrees}, got ${result.degrees}`);
-  if (result.label !== result2.label) throw new Error(`Expected ${result2.label}, got ${result.label}`);
+  // 330 is closest to -26.565° (which normalizes to 333.435°, diff: 3.435)
+  if (result.degrees !== -26.565) throw new Error(`Expected -26.565, got ${result.degrees}`);
+  if (result.label !== "-26.565° (arctan -1/2)") throw new Error(`Expected "-26.565° (arctan -1/2)", got ${result.label}`);
 });
 
 Deno.test("findClosestRationalAngle - handles angle close to 0 from negative side (-1)", () => {
