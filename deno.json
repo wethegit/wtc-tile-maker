@@ -6,7 +6,8 @@
     "sharp": "npm:sharp@^0.34.5"
   },
   "tasks": {
-    "compile": "deno compile --allow-all main.ts"
+    "compile": "deno compile --allow-all main.ts",
+    "test": "deno test --allow-read"
   },
   "version": "0.0.1"
 }
