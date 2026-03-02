@@ -1,12 +1,14 @@
 {
   "imports": {
-    "@std/cli": "jsr:@std/cli@^1.0.27",
-    "@std/fs": "jsr:@std/fs@^1.0.22",
-    "@std/path": "jsr:@std/path@^1.1.4",
+    "@std/assert": "https://deno.land/std@0.224.0/assert/mod.ts",
+    "@std/cli/parse-args": "https://deno.land/std@0.224.0/cli/parse_args.ts",
+    "@std/fs/exists": "https://deno.land/std@0.224.0/fs/exists.ts",
+    "@std/path": "https://deno.land/std@0.224.0/path/mod.ts",
     "sharp": "npm:sharp@^0.34.5"
   },
   "tasks": {
-    "compile": "deno compile --allow-all main.ts"
+    "compile": "deno compile --allow-all main.ts",
+    "test": "deno test --allow-read --allow-env --allow-ffi"
   },
   "version": "0.0.1"
 }
