@@ -1,6 +1,6 @@
-import { parseArgs } from "@std/cli/parse-args";
+import { parseArgs } from "@std/cli";
 import { relative } from "@std/path";
-import { existsSync } from "@std/fs/exists";
+import { existsSync } from "@std/fs";
 
 import {
   findClosestRationalAngle,
@@ -13,30 +13,7 @@ import {
   GenerateTileOptions,
 } from "./src/lib.ts";
 
-const args = parseArgs(Deno.args, {
-  alias: {
-    angleOption: "a",
-    degrees: "d",
-    output: "o",
-    maxValidSize: "s",
-    allowLargeBuffers: "l",
-    quality: "q",
-    tileMargin: "m",
-    verbose: "v",
-  },
-  string: ["output"],
-  default: {
-    angleOption: 0,
-    maxValidSize: 2000,
-    allowLargeBuffers: false,
-    quality: 90,
-    tileMargin: 1,
-  },
-});
-
-if (args.verbose) console.log(args);
-
-function help() {
+export function help() {
   const commandList = {
     help: { description: "Display this help message" },
     list: { description: "List available rational angles" },
@@ -110,7 +87,7 @@ function help() {
 `);
 }
 
-function list() {
+export function list() {
   console.log("Available Rational Angles:");
   const tableData = RATIONAL_ANGLES.map((ra) => ({
     Label: ra.label,
@@ -132,7 +109,7 @@ export interface GenerateOptions {
   input?: string;
 }
 
-async function generate({
+export async function generate({
   angleOption = 0,
   degrees,
   output,
@@ -167,13 +144,13 @@ async function generate({
 
   // Calculate tile dimensions
   const metadata = await getImageProperties(inputPath);
-  if (args.verbose) console.log("Input image metadata: ", metadata);
+  if (verbose) console.log("Input image metadata: ", metadata);
   const tileDims = calculateTileDimensions(
     metadata.width,
     metadata.height,
     rationalAngle,
   );
-  if (args.verbose) console.log("Selected angle detail: ", rationalAngle);
+  if (verbose) console.log("Selected angle detail: ", rationalAngle);
   console.log(
     `Calculated tile dimensions: ${tileDims.width}x${tileDims.height}px`,
   );
@@ -214,7 +191,30 @@ Suggested fix: choose a different rational angle or increase the maximum valid s
   console.log(`Output saved to: ${outputPath}`);
 }
 
-async function main() {
+export async function main(providedArgs?: string[]) {
+  const args = parseArgs(providedArgs ?? Deno.args, {
+    alias: {
+      angleOption: "a",
+      degrees: "d",
+      output: "o",
+      maxValidSize: "s",
+      allowLargeBuffers: "l",
+      quality: "q",
+      tileMargin: "m",
+      verbose: "v",
+    },
+    string: ["output"],
+    default: {
+      angleOption: 0,
+      maxValidSize: 2000,
+      allowLargeBuffers: false,
+      quality: 90,
+      tileMargin: 1,
+    },
+  });
+
+  if (args.verbose) console.log(args);
+
   type Command = "help" | "list" | "generate" | "version";
   const command = (args._[0] ?? "help") as Command;
   switch (command) {
@@ -235,15 +235,18 @@ async function main() {
   }
 }
 
-try {
-  await main();
-} catch (error) {
-  if (error instanceof Error) {
-    if (error.message == "Input image exceeds pixel limit")
-      console.log(`Error: ${error.message}. Try setting the -l flag.`);
-    else console.error(`Error: ${error.message}`);
-  } else {
-    console.error(error);
+// Only run main if this is the main module
+if (import.meta.main) {
+  try {
+    await main();
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message == "Input image exceeds pixel limit")
+        console.log(`Error: ${error.message}. Try setting the -l flag.`);
+      else console.error(`Error: ${error.message}`);
+    } else {
+      console.error(error);
+    }
+    Deno.exit(1);
   }
-  Deno.exit(1);
 }
