@@ -23,11 +23,15 @@ function lcm(a: number, b: number): number {
   return Math.abs(a * b) / gcd(a, b);
 }
 
-// Simple assertion function
+// Simple assertion function for numbers with optional epsilon for floating point
 function assertEquals(actual: number, expected: number, message?: string) {
-  if (actual !== expected) {
+  // Use epsilon comparison for floating point numbers
+  const epsilon = 1e-10;
+  const diff = Math.abs(actual - expected);
+  
+  if (diff > epsilon) {
     throw new Error(
-      message || `Assertion failed: expected ${expected}, got ${actual}`,
+      message || `Assertion failed: expected ${expected}, got ${actual} (diff: ${diff})`,
     );
   }
 }
@@ -100,12 +104,12 @@ Deno.test("lcm - relationship with gcd", () => {
   }
 });
 
-Deno.test("lcm - fractional numbers (rounded)", () => {
-  // The function uses Math.abs(a * b) / gcd(a, b)
-  // gcd rounds inputs, but lcm uses the original values for multiplication
-  // So lcm(4.7, 6.2) = |4.7 * 6.2| / gcd(5, 6) = 29.14 / 1 = 29.14
+Deno.test("lcm - fractional numbers (behavior with non-integers)", () => {
+  // Note: gcd rounds inputs using Math.round(), but lcm uses original values for multiplication
+  // lcm(a, b) = |a * b| / gcd(a, b) where gcd operates on rounded values
+  // Example: lcm(4.7, 6.2) = |4.7 * 6.2| / gcd(5, 6) = 29.14 / 1 = 29.14
   assertEquals(lcm(4.7, 6.2), 29.14);
-  // lcm(3.1, 5.9) = |3.1 * 5.9| / gcd(3, 6) = 18.29 / 3
+  // lcm(3.1, 5.9) = |3.1 * 5.9| / gcd(3, 6)
   const result = lcm(3.1, 5.9);
   const expected = (3.1 * 5.9) / gcd(3.1, 5.9);
   assertEquals(result, expected);
