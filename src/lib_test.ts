@@ -1,13 +1,5 @@
+import { assertEquals } from "jsr:@std/assert";
 import { getOutputPath } from "./lib.ts";
-
-// Simple assertion helper
-function assertEquals<T>(actual: T, expected: T, msg?: string): void {
-  if (actual !== expected) {
-    throw new Error(
-      msg || `Expected ${JSON.stringify(expected)}, but got ${JSON.stringify(actual)}`
-    );
-  }
-}
 
 Deno.test("getOutputPath - default output without custom path", () => {
   const result = getOutputPath({
