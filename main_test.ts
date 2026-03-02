@@ -165,7 +165,7 @@ Deno.test("generate - error when dimensions exceed maxValidSize", async () => {
       async () => {
         await generate({
           input: testInput,
-          angleOption: 7, // 63.435° (arctan 2) - will produce larger dimensions
+          angleOption: 7, // 63.435° - will produce larger dimensions
           maxValidSize: 100, // Very small max size to trigger error
         } as GenerateOptions);
       },
