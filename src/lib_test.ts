@@ -71,5 +71,3 @@ Deno.test("gcd - powers of 2", () => {
   assertEquals(gcd(64, 32), 32);
   assertEquals(gcd(128, 256), 128);
 });
-
-
