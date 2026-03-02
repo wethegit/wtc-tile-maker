@@ -47,7 +47,7 @@ The test suite for `findClosestRationalAngle` covers:
 
 ## Test Count
 
-The test suite includes **28 comprehensive test cases** covering all aspects of the `findClosestRationalAngle` function.
+The test suite includes **27 comprehensive test cases** covering all aspects of the `findClosestRationalAngle` function.
 
 ## Function Behavior
 
