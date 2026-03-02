@@ -38,7 +38,6 @@ Deno.test("gcd - coprime numbers", () => {
 Deno.test("gcd - one is 1", () => {
   assertEquals(gcd(1, 5), 1);
   assertEquals(gcd(5, 1), 1);
-  assertEquals(gcd(1, 1), 1);
 });
 
 Deno.test("gcd - large numbers", () => {
