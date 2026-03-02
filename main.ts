@@ -132,7 +132,7 @@ export interface GenerateOptions {
   input?: string;
 }
 
-async function generate({
+export async function generate({
   angleOption = 0,
   degrees,
   output,
