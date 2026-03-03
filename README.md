@@ -4,7 +4,7 @@
 
 When generating tiles for websites, designers and developers often encounter
 issues when rotating tiles. Common solutions involve less-than-ideal hacks, such
-as adding pseudoelements, scaling, and rotating them to achieve the desired
+as adding pseudo-elements, scaling, and rotating them to achieve the desired
 effect. These workarounds can complicate code, reduce performance, and make
 maintenance harder.
 
@@ -62,7 +62,6 @@ Run the test suite:
 
 ```sh
 deno task test
-
 ```
 
 Check code formatting:
@@ -197,7 +196,7 @@ Generate a rotated tile from `Checker.png` using angle index 27, and max size
 | Output  | Resulting seamlessly tileable image after processing.                                 | <img src="Checker-tile-63.435.png" width="300" /> |
 
 This will also work with images of different aspect ratios (like 3×2). For
-example. this generates a rotated tile from `3x2-checker.png` using 45°:
+example, this generates a rotated tile from `3x2-checker.png` using 45°:
 
 | Step    | Description                                      | Example                                           |
 | ------- | ------------------------------------------------ | ------------------------------------------------- |
@@ -215,7 +214,7 @@ dimensions. This command should be updated to
 Sometimes, a combination of input size and rotation will produce an output that
 is either too large or creating an appropriate output tile is just beyond the
 capabilities of this math. In this case you should likely fall back to hacky
-methods or get a tile produces in a more predictable aspect ratio.
+methods or get a tile produced in a more predictable aspect ratio.
 
 ### Generate with a Specific Degree
 
@@ -281,7 +280,7 @@ To create a seamlessly tileable output:
 5. **Output**: The resulting image can be used as a CSS background and will tile
    perfectly at the rotated angle
 
-This approach eliminates the need for CSS hacks like pseudoelements with
+This approach eliminates the need for CSS hacks like pseudo-elements with
 `transform: rotate()` and `scale()`, resulting in cleaner code, better
 performance, and more predictable rendering across browsers.
 

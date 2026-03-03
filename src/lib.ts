@@ -1,4 +1,4 @@
-import { basename, dirname, extname } from "@std/path";
+import { basename, dirname, extname, join } from "@std/path";
 import sharp from "sharp";
 
 export interface AngleEntry {
@@ -230,7 +230,7 @@ export function getOutputPath({
   const inputDir = dirname(input as string);
   const outputFileName =
     `${inputBase}-tile-${rationalAngle.degrees}${inputExt}`;
-  return output ? (output as string) : `${inputDir}/${outputFileName}`;
+  return output ? (output as string) : join(inputDir, outputFileName);
 }
 
 export interface GenerateTileOptions {
