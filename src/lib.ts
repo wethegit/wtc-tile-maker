@@ -48,9 +48,10 @@ export const RATIONAL_ANGLES: angleEntry[] = [
  * Find the closest rational angle to the given angle
  */
 export function findClosestRationalAngle(angle: number): angleEntry {
-  // Normalize angle to 0-360 range for matching
+  // Normalize angle to -180 to 180 range for matching
   let normalizedAngle = angle % 360;
-  if (normalizedAngle < 0) normalizedAngle += 360;
+  if (normalizedAngle > 180) normalizedAngle -= 360;
+  if (normalizedAngle < -180) normalizedAngle += 360;
 
   return RATIONAL_ANGLES.reduce((closest, ra) =>
     Math.abs(normalizedAngle - ra.degrees) <
@@ -162,6 +163,7 @@ export function validateDimensions({
 
   if (!isFinite(width) || !isFinite(height)) {
     errors.push("Tile dimensions resulted in infinity");
+    return errors; // Return early to avoid redundant size checks
   }
 
   if (width > validWidth) {
