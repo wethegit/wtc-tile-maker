@@ -2,9 +2,9 @@ name: Tests
 
 on:
   pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
   push:
-    branches: [ main, master ]
+    branches: [ main ]
 
 jobs:
   test:
@@ -23,7 +23,7 @@ jobs:
           deno-version: v2.x
 
       - name: Run tests
-        run: deno test --allow-read --allow-write
+        run: deno test --allow-read --allow-write --allow-env
 
       - name: Check formatting
         run: deno fmt --check
