@@ -3,14 +3,13 @@ import { relative } from "@std/path";
 import { existsSync } from "@std/fs/exists";
 
 import {
-  findClosestRationalAngle,
-  getImageProperties,
   calculateTileDimensions,
-  getOutputPath,
+  findClosestRationalAngle,
   generateTile,
+  getImageProperties,
+  getOutputPath,
   RATIONAL_ANGLES,
   validateDimensions,
-  GenerateTileOptions,
 } from "./src/lib.ts";
 
 // Define a proper interface for parsed arguments
@@ -241,19 +240,19 @@ type Command = typeof VALID_COMMANDS[number];
 
 // Type guard for valid commands
 function isValidCommand(cmd: unknown): cmd is Command {
-  return typeof cmd === "string" && 
+  return typeof cmd === "string" &&
     (VALID_COMMANDS as readonly string[]).includes(cmd);
 }
 
 async function main() {
   const commandInput = args._[0] ?? "help";
-  
+
   if (!isValidCommand(commandInput)) {
-    throw new Error(`Unknown command${args._[0] ? `: ${args._[0]}` : '.'}`);
+    throw new Error(`Unknown command${args._[0] ? `: ${args._[0]}` : "."}`);
   }
-  
+
   const command = commandInput;
-  
+
   switch (command) {
     case "help":
       help();
@@ -266,7 +265,7 @@ async function main() {
       if (typeof input !== "string") {
         throw new Error("Input file must be a string");
       }
-      
+
       await generate({
         angleOption: args.angleOption,
         degrees: args.degrees,
@@ -290,9 +289,9 @@ try {
   await main();
 } catch (error) {
   if (error instanceof Error) {
-    if (error.message == "Input image exceeds pixel limit")
+    if (error.message == "Input image exceeds pixel limit") {
       console.log(`Error: ${error.message}. Try setting the -l flag.`);
-    else console.error(`Error: ${error.message}`);
+    } else console.error(`Error: ${error.message}`);
   } else {
     console.error(error);
   }

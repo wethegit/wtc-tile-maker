@@ -1,12 +1,12 @@
-import { assertEquals, assertThrows } from "jsr:@std/assert";
+import { assertEquals } from "jsr:@std/assert";
 import {
+  calculateTileDimensions,
   findClosestRationalAngle,
   gcd,
-  lcm,
-  calculateTileDimensions,
-  validateDimensions,
   getOutputPath,
+  lcm,
   RATIONAL_ANGLES,
+  validateDimensions,
 } from "./lib.ts";
 
 // Test findClosestRationalAngle

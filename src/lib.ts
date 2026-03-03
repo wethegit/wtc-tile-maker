@@ -55,9 +55,9 @@ export function findClosestRationalAngle(angle: number): AngleEntry {
 
   return RATIONAL_ANGLES.reduce((closest, ra) =>
     Math.abs(normalizedAngle - ra.degrees) <
-    Math.abs(normalizedAngle - closest.degrees)
+        Math.abs(normalizedAngle - closest.degrees)
       ? ra
-      : closest,
+      : closest
   );
 }
 
@@ -228,7 +228,8 @@ export function getOutputPath({
   const inputExt = extname(input as string);
   const inputBase = basename(input as string, inputExt);
   const inputDir = dirname(input as string);
-  const outputFileName = `${inputBase}-tile-${rationalAngle.degrees}${inputExt}`;
+  const outputFileName =
+    `${inputBase}-tile-${rationalAngle.degrees}${inputExt}`;
   return output ? (output as string) : `${inputDir}/${outputFileName}`;
 }
 
@@ -270,12 +271,13 @@ export async function generateTile({
     height: metadata.height * tileRepeat.y,
   };
 
-  if (verbose)
+  if (verbose) {
     console.log(
       "Tiled dimensions and repeat counts:",
       tiledDimensions,
       tileRepeat,
     );
+  }
 
   console.log("Starting tile generation, this may take a moment.");
 
