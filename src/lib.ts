@@ -48,7 +48,7 @@ export const RATIONAL_ANGLES: AngleEntry[] = [
  * Find the closest rational angle to the given angle
  */
 export function findClosestRationalAngle(angle: number): AngleEntry {
-  // Normalize angle to 0-360 range for matching
+  // Normalize angle to -180 to 180 range for matching
   let normalizedAngle = angle % 360;
   if (normalizedAngle > 180) normalizedAngle -= 360;
   if (normalizedAngle < -180) normalizedAngle += 360;
