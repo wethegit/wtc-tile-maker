@@ -23,7 +23,7 @@ jobs:
           deno-version: v2.x
 
       - name: Run tests
-        run: deno test --allow-read --allow-write --allow-env --allow-ffi
+        run: deno task test
 
       - name: Check formatting
         run: deno fmt --check

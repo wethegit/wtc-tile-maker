@@ -62,8 +62,7 @@ Run the test suite:
 
 ```sh
 deno task test
-# or
-deno test --allow-read --allow-write
+
 ```
 
 Check code formatting:
