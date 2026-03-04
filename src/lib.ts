@@ -1,4 +1,4 @@
-import { basename, dirname, extname } from "@std/path";
+import { basename, dirname, extname, join, SEPARATOR } from "@std/path";
 import sharp from "sharp";
 
 export interface AngleEntry {
@@ -48,15 +48,16 @@ export const RATIONAL_ANGLES: AngleEntry[] = [
  * Find the closest rational angle to the given angle
  */
 export function findClosestRationalAngle(angle: number): AngleEntry {
-  // Normalize angle to 0-360 range for matching
+  // Normalize angle to -180 to 180 range for matching
   let normalizedAngle = angle % 360;
-  if (normalizedAngle < 0) normalizedAngle += 360;
+  if (normalizedAngle > 180) normalizedAngle -= 360;
+  if (normalizedAngle < -180) normalizedAngle += 360;
 
   return RATIONAL_ANGLES.reduce((closest, ra) =>
     Math.abs(normalizedAngle - ra.degrees) <
-    Math.abs(normalizedAngle - closest.degrees)
+        Math.abs(normalizedAngle - closest.degrees)
       ? ra
-      : closest,
+      : closest
   );
 }
 
@@ -157,6 +158,7 @@ export function validateDimensions({
 
   if (!isFinite(width) || !isFinite(height)) {
     errors.push("Tile dimensions resulted in infinity");
+    return errors; // Return early to avoid redundant size checks
   }
 
   if (width > validWidth) {
@@ -226,8 +228,12 @@ export function getOutputPath({
   const inputExt = extname(input as string);
   const inputBase = basename(input as string, inputExt);
   const inputDir = dirname(input as string);
-  const outputFileName = `${inputBase}-tile-${rationalAngle.degrees}${inputExt}`;
-  return output ? (output as string) : `${inputDir}/${outputFileName}`;
+  const outputFileName =
+    `${inputBase}-tile-${rationalAngle.degrees}${inputExt}`;
+  if (output) return output as string;
+  const outputPath = join(inputDir, outputFileName);
+  // Preserve "./" or ".\" prefix for files in current directory for cross-platform compatibility
+  return inputDir === "." ? `.${SEPARATOR}${outputFileName}` : outputPath;
 }
 
 export interface GenerateTileOptions {
@@ -268,12 +274,13 @@ export async function generateTile({
     height: metadata.height * tileRepeat.y,
   };
 
-  if (verbose)
+  if (verbose) {
     console.log(
       "Tiled dimensions and repeat counts:",
       tiledDimensions,
       tileRepeat,
     );
+  }
 
   console.log("Starting tile generation, this may take a moment.");
 

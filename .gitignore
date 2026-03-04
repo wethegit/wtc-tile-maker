@@ -1,0 +1,22 @@
+# Deno
+.deno/
+deno.lock
+
+# Build outputs
+*.exe
+tile-maker
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Test artifacts
+coverage/
+*.lcov
