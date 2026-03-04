@@ -1,4 +1,5 @@
 import { assertEquals } from "@std/assert";
+import { join, SEPARATOR } from "@std/path";
 import {
   calculateTileDimensions,
   findClosestRationalAngle,
@@ -137,15 +138,16 @@ Deno.test("calculateTileDimensions - 90 degrees swaps dimensions", () => {
 
 Deno.test("calculateTileDimensions - 45 degrees on square image", () => {
   const result = calculateTileDimensions(100, 100, { m: 1, n: 1 });
-  // For 45 degrees with square input, output should be larger
-  assertEquals(result.width > 0, true);
-  assertEquals(result.height > 0, true);
+  // For 45 degrees (m=1, n=1) on 100x100, expect 141x141
+  assertEquals(result.width, 141);
+  assertEquals(result.height, 141);
 });
 
 Deno.test("calculateTileDimensions - handles 26.565 degrees (1:2 ratio)", () => {
   const result = calculateTileDimensions(100, 200, { m: 1, n: 2 });
-  assertEquals(result.width > 0, true);
-  assertEquals(result.height > 0, true);
+  // For 26.565 degrees (m=1, n=2) on 100x200, expect 447x224
+  assertEquals(result.width, 447);
+  assertEquals(result.height, 224);
 });
 
 Deno.test("calculateTileDimensions - negative m produces same dimensions as positive m", () => {
@@ -242,27 +244,27 @@ Deno.test("validateDimensions - reports multiple errors", () => {
 // Test getOutputPath
 Deno.test("getOutputPath - generates default output path", () => {
   const result = getOutputPath({
-    input: "/path/to/image.png",
+    input: join("path", "to", "image.png"),
     rationalAngle: { degrees: 45 },
   });
-  assertEquals(result, "/path/to/image-tile-45.png");
+  assertEquals(result, join("path", "to", "image-tile-45.png"));
 });
 
 Deno.test("getOutputPath - handles custom output path", () => {
   const result = getOutputPath({
-    input: "/path/to/image.png",
+    input: join("path", "to", "image.png"),
     rationalAngle: { degrees: 45 },
-    output: "/custom/output.png",
+    output: join("custom", "output.png"),
   });
-  assertEquals(result, "/custom/output.png");
+  assertEquals(result, join("custom", "output.png"));
 });
 
 Deno.test("getOutputPath - handles different extensions", () => {
   const result = getOutputPath({
-    input: "/path/to/image.jpg",
+    input: join("path", "to", "image.jpg"),
     rationalAngle: { degrees: 26.565 },
   });
-  assertEquals(result, "/path/to/image-tile-26.565.jpg");
+  assertEquals(result, join("path", "to", "image-tile-26.565.jpg"));
 });
 
 Deno.test("getOutputPath - handles files in current directory", () => {
@@ -270,16 +272,16 @@ Deno.test("getOutputPath - handles files in current directory", () => {
     input: "image.png",
     rationalAngle: { degrees: 90 },
   });
-  assertEquals(result, "./image-tile-90.png");
+  assertEquals(result, `.${SEPARATOR}image-tile-90.png`);
 });
 
 Deno.test("getOutputPath - handles negative angles with double dash", () => {
   const result = getOutputPath({
-    input: "/path/to/image.png",
+    input: join("path", "to", "image.png"),
     rationalAngle: { degrees: -45 },
   });
   // Note: negative angles result in double dash in filename (e.g., -tile--45)
-  assertEquals(result, "/path/to/image-tile--45.png");
+  assertEquals(result, join("path", "to", "image-tile--45.png"));
 });
 
 // Test RATIONAL_ANGLES constant
