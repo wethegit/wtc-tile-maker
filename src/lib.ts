@@ -230,7 +230,10 @@ export function getOutputPath({
   const inputDir = dirname(input as string);
   const outputFileName =
     `${inputBase}-tile-${rationalAngle.degrees}${inputExt}`;
-  return output ? (output as string) : join(inputDir, outputFileName);
+  if (output) return output as string;
+  const outputPath = join(inputDir, outputFileName);
+  // Preserve "./" prefix for files in current directory
+  return inputDir === "." ? `./${outputFileName}` : outputPath;
 }
 
 export interface GenerateTileOptions {
